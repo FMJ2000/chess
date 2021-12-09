@@ -21,6 +21,7 @@ class Game: public sf::Drawable {
 		// board
 		Block * board[NUM_ROWS][NUM_COLS];
 		sf::RectangleShape border;
+		std::vector<std::array<int, 2>> valid;
 
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
@@ -34,8 +35,9 @@ class Game: public sf::Drawable {
 		~Game();
 		void setup();
 		void highlight(std::vector<std::array<int, 2>> indices);
-		void select(int index[2]);
+		void select(std::array<int, 2> index);
 		void setPiece(Piece pieceIndex);
+		void validMoves(Piece pieceIndex, std::array<int, 2> pos);
 };
 
 #endif

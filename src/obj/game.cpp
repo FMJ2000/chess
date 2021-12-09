@@ -81,24 +81,30 @@ void Game::highlight(std::vector<std::array<int, 2>> indices) {
 		for (int j = 0; j < NUM_COLS; j++) {
 			char on = 0;
 			for (int k = 0; k < indices.size(); k++) {
-				if (indices.at(k).at(1) == i && indices.at(k).at(0) == j) on = 1;
+				if (indices[k][0] == i && indices[k][1] == j) on = 1;
 			}
 			this->board[i][j]->highlight(on);
 		}
 	}
 }
 
-void Game::select(int index[2]) {
+void Game::select(std::array<int, 2> index) {
 	if (this->hasPiece) {
 		// holding piece, put down
-		this->board[index[1]][index[0]]->setPiece(this->pieceIndex, this->turn);
-		this->hasPiece = 0;
-		this->turn ^= 1;
+		for (auto it = this->valid.begin(); it < this->valid.end(); it++) {
+			if (index == *it) {
+				this->board[index[0]][index[1]]->setPiece(this->pieceIndex, this->turn);
+				this->hasPiece = 0;
+				if (it - this->valid.begin() > 0) this->turn ^= 1;
+			}
+		}
 	} else {
 		// picking piece up
-		if (this->board[index[1]][index[0]]->hasPiece && this->board[index[1]][index[0]]->player == this->turn) {
-			this->setPiece(this->board[index[1]][index[0]]->pieceIndex);
-			this->board[index[1]][index[0]]->setPiece(NONE, -1);
+		if (this->board[index[0]][index[1]]->hasPiece && this->board[index[0]][index[1]]->player == this->turn) {
+			this->setPiece(this->board[index[0]][index[1]]->pieceIndex);
+			this->board[index[0]][index[1]]->setPiece(NONE, -1);
+			this->validMoves(this->pieceIndex, index);
+			this->highlight(this->valid);
 		}
 	}	
 }
@@ -116,3 +122,32 @@ void Game::setPiece(Piece pieceIndex) {
 	}
 }
 
+void Game::validMoves(Piece pieceIndex, std::array<int, 2> pos) {
+	this->valid.clear();
+	this->valid.push_back({ pos[0], pos[1] });
+
+	switch (pieceIndex) {
+		case PAWN: {
+			switch (turn) {
+				case WHITE: {
+					if (pos[ROW]-1 >= 0 && !this->board[pos[ROW]-1][pos[COL]]->hasPiece) {
+						this->valid.push_back({ pos[ROW]-1, pos[COL] });
+						if (pos[ROW] == 6 && !this->board[pos[ROW]-2][pos[COL]]->hasPiece) this->valid.push_back({ pos[ROW]-2, pos[COL] });
+						if (pos[COL]-1 >= 0 && this->board[pos[ROW]-1][pos[COL]-1]->hasPiece) this->valid.push_back({ pos[ROW]-1, pos[COL]-1 });
+						if (pos[COL]+1 < NUM_COLS && this->board[pos[ROW]-1][pos[COL]+1]->hasPiece) this->valid.push_back({ pos[ROW]-1, pos[COL]+1 });
+					}
+					break;
+				}
+
+				case BLACK: {
+					if (pos[ROW]+1 < NUM_ROWS && !this->board[pos[ROW]+1][pos[COL]]->hasPiece) {
+						this->valid.push_back({ pos[ROW]+1, pos[COL] });
+						if (pos[ROW] == 1 && !this->board[pos[ROW]+2][pos[COL]]->hasPiece) this->valid.push_back({ pos[ROW]+2, pos[COL] });
+					}
+					break;
+				}
+			}
+			break;
+		}
+	}
+}

@@ -40,6 +40,8 @@
 #define PAWN_SIZE 180
 #define BLOCK_SIZE 100
 #define NUM_PIECES 6
+#define ROW 0
+#define COL 1
 
 // colors
 #define BACKGROUND 0x34568bff
