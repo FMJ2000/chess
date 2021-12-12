@@ -18,7 +18,7 @@
 
 // layout
 #define W_WIDTH 1200
-#define W_HEIGHT 900
+#define W_HEIGHT 950
 #define W_TITLE "Cheesy Chess"
 
 // players
@@ -52,5 +52,27 @@
 #define BLACK_HIGHLIGHT 0x926124ff
 
 enum Piece {KING=0, QUEEN, ROOK, BISHOP, KNIGHT, PAWN, NONE};
+
+static int posMod[8][2] = {
+	{-1, -1},
+	{-1, 0},
+	{-1, 1},
+	{0, -1},
+	{1, -1},
+	{1, 0},
+	{1, 1},
+	{0, 1}
+};
+
+static int knightMod[8][2] = {
+	{-2, 1},
+	{-1, 2},
+	{1, 2},
+	{2, 1},
+	{2, -1},
+	{1, -2},
+	{-1, -2},
+	{-2, -1}
+};
 
 #endif
